@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmFresh | List Your Surplus</title>
+    <meta name="description" content="List your surplus farm produce on FarmFresh and connect with buyers in your area.">
+    <style>
+        /* Reuse existing styles from main CSS */
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --secondary: #8BC34A;
+            --light: #F1F8E9;
+            --dark: #2E7D32;
+            --accent: #FFC107;
+            --accent-dark: #FFA000;
+            --blue: #2196F3;
+            --blue-dark: #1976D2;
+            --red: #F44336;
+            --text: #333;
+            --text-light: #666;
+            --white: #FFFFFF;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.1);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --transition: all 0.3s ease;
+        }
+        
+        /* Surplus-specific styles */
+        .surplus-hero {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                        url('https://images.unsplash.com/photo-1605000797499-95a51c5269ae?q=80&w=1000') center/cover;
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+        
+        .listing-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+        
+        .filter-sidebar {
+            background: var(--white);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .filter-title {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--light);
+        }
+        
+        .filter-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-group h4 {
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .filter-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .listings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .listing-card {
+            background: var(--white);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+        
+        .listing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .listing-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+        
+        .listing-details {
+            padding: 1.5rem;
+        }
+        
+        .listing-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+        
+        .listing-farmer {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .farmer-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .listing-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+        }
+        
+        .listing-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 1.2rem;
+        }
+        
+        .listing-location {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .listing-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .create-listing-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 50;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+        
+        .create-listing-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+        }
+        
+        .page-link {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-sm);
+            background: var(--white);
+            color: var(--text);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        
+        .page-link.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .page-link:hover:not(.active) {
+            background: var(--light);
+        }
+        
+        /* Form styles */
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .form-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--radius-sm);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .image-upload {
+            border: 2px dashed #ddd;
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .image-upload:hover {
+            border-color: var(--primary);
+        }
+        
+        .image-upload input {
+            display: none;
+        }
+        
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .preview-image {
+            height: 100px;
+            width: 100%;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+        }
+        
+        @media (max-width: 992px) {
+            .listing-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-sidebar {
+                position: static;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <a class="logo">
+                <i class="fas fa-tractor"><h1 class="header-title">FarmFresh</h1></i>
+
+            </a>
+            <p class="header-subtitle" style="color: white;">Empowering Farmers with Smart Agricultural Solutions</p>
+        </div>
+    </header>
+    
+    <!-- Navigation -->
+    <nav>
+        <div class="container nav-container">
+            <div class="nav-links" style="background-color: hsl(110, 100%, 11%); padding: 1rem 2rem;border: 2px solid rgba(0, 255, 174, 0.2); border-radius: 12px;box-shadow: 0 0 15px hsl(162, 93%, 17%); backdrop-filter: blur(4px);  margin-bottom: 20px;">
+                
+                <a href="index.html" style="color: white;"><i class="fas fa-home"></i> Home  </a>
+                <a href="tutorial.html" style="color: white;"><i class="  fas fa-graduation-cap"></i> Tutorials  </a>
+                <a href="weather.html" style="color: white;"><i class="   fas fa-cloud-sun  "></i> Weather  </a>
+                <a href="community.html" style="color: white;"><i class="fas fa-users"></i> Community  </a>
+                <a href="about.html" style="color: white;"><i class="fas fa-user-tie"></i>About    </a>
+                <a href="listing.html"><i class="fas fa-farmer"></i> Farmer's listing Panel</a>
+            </div>
+            
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="surplus-hero">
+        <div class="container">
+            <h1 style="font-size: 2.5rem; margin-bottom: 1rem;">Farmers' Surplus Marketplace</h1>
+            <p style="font-size: 1.2rem; max-width: 700px; margin: 0 auto;">Connect directly with buyers and sell your surplus produce at fair prices</p>
+        </div>
+    </section>
+    
+    <!-- Main Content -->
+    <div class="container listing-container">
+        <!-- Filters Sidebar -->
+        <aside class="filter-sidebar">
+            <h3 class="filter-title">Filter Listings</h3>
+            
+            <div class="filter-group">
+                <h4>Product Category</h4>
+                <div class="filter-options">
+                    <label class="filter-checkbox">
+                        <input type="checkbox" checked> Vegetables
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" checked> Fruits
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" checked> Grains
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" checked> Dairy
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" checked> Poultry
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox" checked> Other
+                    </label>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <h4>Location</h4>
+                <select class="form-control">
+                    <option>Anywhere</option>
+                    <option>Within 10km</option>
+                    <option>Within 25km</option>
+                    <option>Within 50km</option>
+                    <option>Within 100km</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <h4>Price Range</h4>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="number" class="form-control" placeholder="Min" style="flex: 1;">
+                    <span>to</span>
+                    <input type="number" class="form-control" placeholder="Max" style="flex: 1;">
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <h4>Availability</h4>
+                <div class="filter-options">
+                    <label class="filter-checkbox">
+                        <input type="checkbox" checked> Available Now
+                    </label>
+                    <label class="filter-checkbox">
+                        <input type="checkbox"> Upcoming Harvest
+                    </label>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Apply Filters</button>
+            <button class="btn btn-outline" style="width: 100%; margin-top: 0.5rem;">Reset Filters</button>
+        </aside>
+        
+        <!-- Listings Grid -->
+        <main>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3>124 Available Listings</h3>
+                <div>
+                    <label>Sort by: </label>
+                    <select class="form-control" style="display: inline-block; width: auto;">
+                        <option>Newest First</option>
+                        <option>Price: Low to High</option>
+                        <option>Price: High to Low</option>
+                        <option>Distance</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="listings-grid">
+                <!-- Listing 1 -->
+                <div class="listing-card">
+                    <img src="https://images.unsplash.com/photo-1518977676601-b53f82aba655?q=80&w=1000" class="listing-image">
+                    <div class="listing-details">
+                        <h3 class="listing-title">Organic Potato</h3>
+                        <div class="listing-farmer">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" class="farmer-avatar">
+                            <span>Rajesh Kumar</span>
+                        </div>
+                        <div class="listing-price">₹45/kg</div>
+                        <div class="listing-meta">
+                            <span><i class="fas fa-weight-hanging"></i> 200kg available</span>
+                            <span class="listing-location"><i class="fas fa-map-marker-alt"></i> 12km away</span>
+                        </div>
+                        <div class="listing-actions">
+                            <button class="btn btn-primary btn-sm">Contact Farmer</button>
+                            <button class="btn btn-outline btn-sm">Details</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Listing 2 -->
+                <div class="listing-card">
+                    <img src="https://images.unsplash.com/photo-1550258987-190a2d41a8ba?q=80&w=1000" class="listing-image">
+                    <div class="listing-details">
+                        <h3 class="listing-title">Fresh Pineapples</h3>
+                        <div class="listing-farmer">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg" class="farmer-avatar">
+                            <span>Priya Sharma</span>
+                        </div>
+                        <div class="listing-price">₹80/kg</div>
+                        <div class="listing-meta">
+                            <span><i class="fas fa-weight-hanging"></i> 150kg available</span>
+                            <span class="listing-location"><i class="fas fa-map-marker-alt"></i> 25km away</span>
+                        </div>
+                        <div class="listing-actions">
+                            <button class="btn btn-primary btn-sm">Contact Farmer</button>
+                            <button class="btn btn-outline btn-sm">Details</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Listing 3 -->
+                <div class="listing-card">
+                    <img src="https://th.bing.com/th/id/OIP.ag8a43MsHWHJja5dqDSgygHaE8?w=224&h=180&c=7&r=0&o=5&pid=1.7" class="listing-image">
+                    <div class="listing-details">
+                        <h3 class="listing-title">Basmati Rice</h3>
+                        <div class="listing-farmer">
+                            <img src="https://randomuser.me/api/portraits/men/67.jpg" class="farmer-avatar">
+                            <span>Vijay Patel</span>
+                        </div>
+                        <div class="listing-price">₹55/kg</div>
+                        <div class="listing-meta">
+                            <span><i class="fas fa-weight-hanging"></i> 500kg available</span>
+                            <span class="listing-location"><i class="fas fa-map-marker-alt"></i> 8km away</span>
+                        </div>
+                        <div class="listing-actions">
+                            <button class="btn btn-primary btn-sm">Contact Farmer</button>
+                            <button class="btn btn-outline btn-sm">Details</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Listing 4 -->
+                <div class="listing-card">
+                    <img src="https://images.unsplash.com/photo-1550583724-b2692b85b150?q=80&w=1000" class="listing-image">
+                    <div class="listing-details">
+                        <h3 class="listing-title">Fresh Milk</h3>
+                        <div class="listing-farmer">
+                            <img src="https://randomuser.me/api/portraits/women/28.jpg" class="farmer-avatar">
+                            <span>Sunita Devi</span>
+                        </div>
+                        <div class="listing-price">₹50/liter</div>
+                        <div class="listing-meta">
+                            <span><i class="fas fa-weight-hanging"></i> 100 liters/day</span>
+                            <span class="listing-location"><i class="fas fa-map-marker-alt"></i> 5km away</span>
+                        </div>
+                        <div class="listing-actions">
+                            <button class="btn btn-primary btn-sm">Contact Farmer</button>
+                            <button class="btn btn-outline btn-sm">Details</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Listing 5 -->
+                <div class="listing-card">
+                    <img src="data:image/jpeg;base64,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" class="listing-image">
+                    <div class="listing-details">
+                        <h3 class="listing-title">Free Range Eggs</h3>
+                        <div class="listing-farmer">
+                            <img src="https://randomuser.me/api/portraits/men/75.jpg" class="farmer-avatar">
+                            <span>Arun Singh</span>
+                        </div>
+                        <div class="listing-price">₹8/egg</div>
+                        <div class="listing-meta">
+                            <span><i class="fas fa-weight-hanging"></i> 500 eggs/week</span>
+                            <span class="listing-location"><i class="fas fa-map-marker-alt"></i> 15km away</span>
+                        </div>
+                        <div class="listing-actions">
+                            <button class="btn btn-primary btn-sm">Contact Farmer</button>
+                            <button class="btn btn-outline btn-sm">Details</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Listing 6 -->
+                <div class="listing-card">
+                    <img src="https://ammajeeorganics.in/wp-content/uploads/2020/12/63797959-1024x768.jpg" class="listing-image">
+                    <div class="listing-details">
+                        <h3 class="listing-title">Organic Wheat</h3>
+                        <div class="listing-farmer">
+                            <img src="https://randomuser.me/api/portraits/men/82.jpg" class="farmer-avatar">
+                            <span>Harish Yadav</span>
+                        </div>
+                        <div class="listing-price">₹35/kg</div>
+                        <div class="listing-meta">
+                            <span><i class="fas fa-weight-hanging"></i> 1000kg available</span>
+                            <span class="listing-location"><i class="fas fa-map-marker-alt"></i> 30km away</span>
+                        </div>
+                        <div class="listing-actions">
+                            <button class="btn btn-primary btn-sm">Contact Farmer</button>
+                            <button class="btn btn-outline btn-sm">Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pagination">
+                <a href="#" class="page-link active">1</a>
+                <a href="#" class="page-link">2</a>
+                <a href="#" class="page-link">3</a>
+                <a href="#" class="page-link">4</a>
+                <a href="#" class="page-link">5</a>
+                <a href="#" class="page-link"><i class="fas fa-chevron-right"></i></a>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Create Listing Button -->
+    <button class="create-listing-btn" id="createListingBtn">
+        <i class="fas fa-plus"></i>
+    </button>
+    
+    <!-- Create Listing Modal (hidden by default) -->
+    <div id="createListingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center;">
+        <div class="form-container">
+            <h2 class="form-title">List Your Surplus Produce</h2>
+            
+            <form id="listingForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Product Name</label>
+                        <input type="text" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select class="form-control" required>
+                            <option value="">Select Category</option>
+                            <option>Vegetables</option>
+                            <option>Fruits</option>
+                            <option>Grains</option>
+                            <option>Dairy</option>
+                            <option>Poultry</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Price (₹ per unit)</label>
+                        <input type="number" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Available Quantity</label>
+                        <input type="number" class="form-control" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Unit</label>
+                    <select class="form-control" required>
+                        <option>kg</option>
+                        <option>gram</option>
+                        <option>liter</option>
+                        <option>piece</option>
+                        <option>dozen</option>
+                        <option>bag (50kg)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Product Images</label>
+                    <div class="image-upload">
+                        <input type="file" id="productImages" multiple accept="image/*">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 2rem; color: var(--primary); margin-bottom: 1rem;"></i>
+                        <p>Click to upload images or drag and drop</p>
+                        <p style="font-size: 0.8rem; color: var(--text-light);">Upload up to 5 images (JPEG, PNG)</p>
+                    </div>
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" rows="4" placeholder="Tell buyers about your product (quality, growing methods, etc.)"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Harvest Date</label>
+                        <input type="date" class="form-control">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Expiry Date (if applicable)</label>
+                        <input type="date" class="form-control">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-control" placeholder="Enter your farm location" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Contact Number</label>
+                    <input type="tel" class="form-control" required>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Submit Listing</button>
+                    <button type="button" id="cancelListing" class="btn btn-outline" style="flex: 1;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <i class="fas fa-tractor"></i>
+                        FarmFresh
+                    </div>
+                    
+                    <p style="color: white;text-align: center;">&copy; 2023 Farmers' Hub. All rights reserved.</p>
+                    <div class="social-links" style="margin-top: 1rem;color: white;justify-content: center;">
+                        <a href="https://www.facebook.com/" style="color: white; margin: 0 0.5rem;"><i class="fab fa-facebook"></i></a>
+                        <a href="https://x.com/?lang=en-in" style="color: white; margin: 0 0.5rem;"><i class="fab fa-twitter"></i></a>
+                        <a href="https://www.instagram.com/" style="color: white; margin: 0 0.5rem;"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/" style="color: white; margin: 0 0.5rem;"><i class="fab fa-youtube"></i></a>
+                    </div>
+                    <div style="margin-top: 1rem;color: white;text-align: center;">
+                        <a href="#" style="color: white; margin: 0 1rem;">Privacy Policy</a>
+                        <a href="about.html" style="color: white; margin: 0 1rem;">Terms of Service</a>
+                        <a href="community.html" style="color: white; margin: 0 1rem;">Contact Us</a>
+                        <a href="about.html" style="color: white; margin: 0 1rem;">About</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Mobile menu toggle functionality
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.style.display = navLinks.style.display === 'flex' ? 'none' : 'flex';
+        });
+        
+        // Create listing modal functionality
+        const createListingBtn = document.getElementById('createListingBtn');
+        const createListingModal = document.getElementById('createListingModal');
+        const cancelListing = document.getElementById('cancelListing');
+        
+        createListingBtn.addEventListener('click', () => {
+            createListingModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        });
+        
+        cancelListing.addEventListener('click', () => {
+            createListingModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+        
+        // Close modal when clicking outside
+        createListingModal.addEventListener('click', (e) => {
+            if (e.target === createListingModal) {
+                createListingModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Image upload preview
+        const productImages = document.getElementById('productImages');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        productImages.addEventListener('change', function() {
+            imagePreview.innerHTML = '';
+            
+            if (this.files && this.files.length > 0) {
+                const files = Array.from(this.files).slice(0, 5); // Limit to 5 images
+                
+                files.forEach(file => {
+                    if (file.type.match('image.*')) {
+                        const reader = new FileReader();
+                        
+                        reader.onload = function(e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.classList.add('preview-image');
+                            imagePreview.appendChild(img);
+                        }
+                        
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+        
+        // Form submission
+        const listingForm = document.getElementById('listingForm');
+        
+        listingForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // In a real app, you would send this data to your server
+            alert('Your listing has been submitted successfully!');
+            createListingModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            this.reset();
+            imagePreview.innerHTML = '';
+        });
+        
+        // Responsive adjustment for nav links
+        function handleResize() {
+            if (window.innerWidth > 768) {
+                navLinks.style.display = 'flex';
+            } else {
+                navLinks.style.display = 'none';
+            }
+        }
+        
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Initialize
+    </script>
+</body>
+</html>
