@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmFresh - List Your Products</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #8BC34A;
+            --light: #F1F8E9;
+            --dark: #2E7D32;
+            --text: #333;
+            --white: #fff;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: 500;
+        }
+        
+        nav a:hover {
+            text-decoration: underline;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .page-title {
+            color: var(--dark);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .listing-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .listing-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .listing-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+        }
+        
+        .checkbox-group input {
+            width: auto;
+            margin-right: 0.5rem;
+        }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: var(--dark);
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .preview-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .product-preview {
+            border: 1px dashed #ccc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            min-height: 300px;
+        }
+        
+        .preview-title {
+            color: var(--dark);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .preview-image {
+            background-color: #f0f0f0;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .preview-image img {
+            max-width: 100%;
+            max-height: 100%;
+            display: none;
+        }
+        
+        .preview-details div {
+            margin-bottom: 0.5rem;
+        }
+        
+        .preview-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 1rem 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            background-color: var(--light);
+            color: var(--dark);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+        
+        .my-listings {
+            margin-top: 3rem;
+        }
+        
+        .listing-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .listing-card img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-right: 1.5rem;
+        }
+        
+        .listing-info {
+            flex-grow: 1;
+        }
+        
+        .listing-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn-outline {
+            background: none;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--light);
+        }
+        
+        .btn-danger {
+            background-color: #f44336;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>FarmFresh</h1>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="marketplace.html">Marketplace</a>
+                <a href="community.html" class="active">community</a>
+                <a href="about.html">About</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container">
+        <h2 class="page-title">List Your Farm Products</h2>
+        
+        <div class="listing-section">
+            <div class="listing-form">
+                <form id="productForm">
+                    <div class="form-group">
+                        <label for="productName">Product Name</label>
+                        <input type="text" id="productName" required placeholder="e.g., Organic Strawberries">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productCategory">Category</label>
+                        <select id="productCategory" required>
+                            <option value="">Select category</option>
+                            <option value="vegetables">Vegetables</option>
+                            <option value="fruits">Fruits</option>
+                            <option value="dairy">Dairy Products</option>
+                            <option value="meat">Meat & Poultry</option>
+                            <option value="eggs">Eggs</option>
+                            <option value="grains">Grains & Legumes</option>
+                            <option value="herbs">Herbs & Spices</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productDescription">Description</label>
+                        <textarea id="productDescription" placeholder="Describe your product (variety, growing methods, freshness, etc.)"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productPrice">Price per unit ($)</label>
+                        <input type="number" id="productPrice" min="0" step="0.01" required placeholder="3.99">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productUnit">Unit</label>
+                        <select id="productUnit" required>
+                            <option value="lb">Pound (lb)</option>
+                            <option value="oz">Ounce (oz)</option>
+                            <option value="kg">Kilogram (kg)</option>
+                            <option value="g">Gram (g)</option>
+                            <option value="each">Each</option>
+                            <option value="dozen">Dozen</option>
+                            <option value="bunch">Bunch</option>
+                            <option value="pint">Pint</option>
+                            <option value="quart">Quart</option>
+                            <option value="gallon">Gallon</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productQuantity">Available Quantity</label>
+                        <input type="number" id="productQuantity" min="1" required placeholder="50">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productImage">Product Image</label>
+                        <input type="file" id="productImage" accept="image/*">
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="organicCertified">
+                        <label for="organicCertified">Certified Organic</label>
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="localPickup">
+                        <label for="localPickup">Available for Local Pickup</label>
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="deliveryAvailable">
+                        <label for="deliveryAvailable">Available for Delivery</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-block">List Product</button>
+                </form>
+            </div>
+            
+            <div class="preview-section">
+                <h3 class="preview-title">Product Preview</h3>
+                <div class="product-preview">
+                    <div class="preview-image">
+                        <img id="previewImage" src="#" alt="Product image preview">
+                        <span>Image preview will appear here</span>
+                    </div>
+                    <h3 id="previewName">Product Name</h3>
+                    <div class="preview-price">$<span id="previewPrice">0.00</span> per <span id="previewUnit">unit</span></div>
+                    <div class="preview-details">
+                        <div id="previewCategory">Category: <span></span></div>
+                        <div id="previewDescription">Description: <span></span></div>
+                        <div id="previewQuantity">Available: <span></span> units</div>
+                    </div>
+                    <div id="previewBadges"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="my-listings">
+            <h2>My Current Listings</h2>
+            
+            <div class="listing-card">
+                <img src="https://via.placeholder.com/100" alt="Tomatoes">
+                <div class="listing-info">
+                    <h3>Heirloom Tomatoes</h3>
+                    <p>$3.99 per lb | 25 lbs available</p>
+                    <div>
+                        <span class="badge">Vegetables</span>
+                        <span class="badge">Organic</span>
+                    </div>
+                </div>
+                <div class="listing-actions">
+                    <button class="btn btn-outline">Edit</button>
+                    <button class="btn btn-danger">Remove</button>
+                </div>
+            </div>
+            
+            <div class="listing-card">
+                <img src="https://via.placeholder.com/100" alt="Honey">
+                <div class="listing-info">
+                    <h3>Raw Local Honey</h3>
+                    <p>$8.50 per pint | 10 pints available</p>
+                    <div>
+                        <span class="badge">Other</span>
+                        <span class="badge">Local</span>
+                    </div>
+                </div>
+                <div class="listing-actions">
+                    <button class="btn btn-outline">Edit</button>
+                    <button class="btn btn-danger">Remove</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Form input event listeners for live preview
+        document.getElementById('productName').addEventListener('input', function() {
+            document.getElementById('previewName').textContent = this.value || 'Product Name';
+        });
+        
+        document.getElementById('productCategory').addEventListener('change', function() {
+            const category = this.options[this.selectedIndex].text;
+            document.querySelector('#previewCategory span').textContent = category;
+        });
+        
+        document.getElementById('productDescription').addEventListener('input', function() {
+            document.querySelector('#previewDescription span').textContent = this.value || 'Not provided';
+        });
+        
+        document.getElementById('productPrice').addEventListener('input', function() {
+            document.getElementById('previewPrice').textContent = this.value || '0.00';
+        });
+        
+        document.getElementById('productUnit').addEventListener('change', function() {
+            const unit = this.options[this.selectedIndex].text;
+            document.getElementById('previewUnit').textContent = unit;
+        });
+        
+        document.getElementById('productQuantity').addEventListener('input', function() {
+            document.querySelector('#previewQuantity span').textContent = this.value || '0';
+        });
+        
+        document.getElementById('productImage').addEventListener('change', function(e) {
+            const preview = document.getElementById('previewImage');
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                preview.nextElementSibling.style.display = 'none';
+            }
+            
+            if (file) {
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Checkbox badges
+        const checkboxes = document.querySelectorAll('.checkbox-group input');
+        const badgeContainer = document.getElementById('previewBadges');
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateBadges();
+            });
+        });
+        
+        function updateBadges() {
+            badgeContainer.innerHTML = '';
+            
+            if (document.getElementById('organicCertified').checked) {
+                const badge = document.createElement('span');
+                badge.className = 'badge';
+                badge.textContent = 'Organic';
+                badgeContainer.appendChild(badge);
+            }
+            
+            if (document.getElementById('localPickup').checked) {
+                const badge = document.createElement('span');
+                badge.className = 'badge';
+                badge.textContent = 'Local Pickup';
+                badgeContainer.appendChild(badge);
+            }
+            
+            if (document.getElementById('deliveryAvailable').checked) {
+                const badge = document.createElement('span');
+                badge.className = 'badge';
+                badge.textContent = 'Delivery Available';
+                badgeContainer.appendChild(badge);
+            }
+        }
+        
+        // Form submission
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Product listed successfully!');
+            // Here you would typically send the data to your backend
+            // this.reset();
+        });
+    </script>
+</body>
+</html>
